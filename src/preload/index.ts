@@ -34,5 +34,3 @@ const api: API = {
 }
 
 contextBridge.exposeInMainWorld('electronAPI', api)
-
-export type { API }

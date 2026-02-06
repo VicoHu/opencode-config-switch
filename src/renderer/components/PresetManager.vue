@@ -3,7 +3,7 @@ import { ref, computed } from 'vue'
 import { useMessage, useDialog } from 'naive-ui'
 import { useConfigStore, type ConfigPreset } from '../stores/config'
 
-const props = defineProps<{
+defineProps<{
   show: boolean
 }>()
 

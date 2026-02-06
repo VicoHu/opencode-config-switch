@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, computed, h } from 'vue'
+import { ref, computed } from 'vue'
 import { useMessage, useDialog } from 'naive-ui'
-import { useConfigStore, type ConfigFile, type ConfigPreset } from '../stores/config'
+import { useConfigStore, type ConfigFile } from '../stores/config'
 import ConfigEditor from '../components/ConfigEditor.vue'
 import ConfigPreview from '../components/ConfigPreview.vue'
 import PresetManager from '../components/PresetManager.vue'
@@ -10,7 +10,7 @@ const store = useConfigStore()
 const message = useMessage()
 const dialog = useDialog()
 
-const activeTab = ref('omo')
+const activeTab = ref<'omo' | 'oc'>('omo')
 const showEditor = ref(false)
 const editingConfig = ref<ConfigFile | null>(null)
 const editingContent = ref<any>(null)

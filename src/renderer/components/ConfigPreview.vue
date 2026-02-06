@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue'
+import { computed } from 'vue'
 import { useMessage } from 'naive-ui'
 import type { ConfigFile } from '../stores/config'
 
