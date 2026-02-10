@@ -116,6 +116,11 @@ function formatDate(dateStr: string) {
 function getConfigTypeLabel(type: string) {
   return type === 'omo' ? 'Oh My OpenCode' : 'OpenCode'
 }
+
+async function handleRefresh() {
+  await store.loadCurrentConfigs()
+  message.success('已刷新当前配置状态')
+}
 </script>
 
 <template>
@@ -126,6 +131,12 @@ function getConfigTypeLabel(type: string) {
         <p class="subtitle">灵活切换 Oh My OpenCode 和 OpenCode 配置</p>
       </div>
       <div class="actions">
+        <n-button @click="handleRefresh" :loading="store.loading" style="margin-right: 12px;">
+          <template #icon>
+            <n-icon><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></n-icon>
+          </template>
+          刷新状态
+        </n-button>
         <n-button type="primary" @click="showPresetManager = true">
           <template #icon>
             <n-icon><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></n-icon>
@@ -346,17 +357,21 @@ function getConfigTypeLabel(type: string) {
   margin: -20px -20px 16px -20px;
   padding-top: 32px;
   -webkit-app-region: drag;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: #ffffff;
+  color: #333;
   border-radius: 8px 8px 0 0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid #e5e7eb;
+  position: relative;
+  z-index: 10;
 }
 
 .header .title h1 {
-  color: white;
+  color: #333;
 }
 
 .header .subtitle {
-  color: rgba(255, 255, 255, 0.8);
+  color: #6b7280;
 }
 
 .header .actions {

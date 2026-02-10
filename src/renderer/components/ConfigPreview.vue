@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useMessage } from 'naive-ui'
 import type { ConfigFile } from '../stores/config'
+import hljs from 'highlight.js'
+import 'highlight.js/styles/github-dark.css'
 
 interface Props {
   show: boolean
@@ -15,6 +17,7 @@ const emit = defineEmits<{
 }>()
 
 const message = useMessage()
+const highlightedCode = ref('')
 
 const formattedContent = computed(() => {
   if (!props.content) return ''
@@ -25,6 +28,22 @@ const configTypeLabel = computed(() => {
   if (!props.config) return ''
   return props.config.type === 'omo' ? 'Oh My OpenCode' : 'OpenCode'
 })
+
+// 监听内容变化，重新高亮
+watch(() => formattedContent.value, (newContent) => {
+  if (newContent) {
+    highlightCode(newContent)
+  }
+}, { immediate: true })
+
+function highlightCode(code: string) {
+  try {
+    const result = hljs.highlight(code, { language: 'json' })
+    highlightedCode.value = result.value
+  } catch (e) {
+    highlightedCode.value = code
+  }
+}
 
 function handleClose() {
   emit('update:show', false)
@@ -98,7 +117,7 @@ function downloadConfig() {
       
       <div class="code-container">
         <n-scrollbar style="max-height: 60vh;">
-          <pre class="code-block"><code>{{ formattedContent }}</code></pre>
+          <pre class="code-block"><code v-html="highlightedCode"></code></pre>
         </n-scrollbar>
       </div>
     </div>
@@ -153,5 +172,34 @@ function downloadConfig() {
   white-space: pre;
   word-wrap: normal;
   overflow-x: auto;
+}
+
+.code-block :deep(.hljs) {
+  background: transparent;
+  padding: 0;
+}
+
+.code-block :deep(.hljs-property) {
+  color: #9cdcfe;
+}
+
+.code-block :deep(.hljs-string) {
+  color: #ce9178;
+}
+
+.code-block :deep(.hljs-number) {
+  color: #b5cea8;
+}
+
+.code-block :deep(.hljs-keyword) {
+  color: #569cd6;
+}
+
+.code-block :deep(.hljs-null) {
+  color: #569cd6;
+}
+
+.code-block :deep(.hljs-punctuation) {
+  color: #d4d4d4;
 }
 </style>
