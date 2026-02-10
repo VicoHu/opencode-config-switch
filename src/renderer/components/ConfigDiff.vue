@@ -48,30 +48,19 @@ function handleClose() {
     </div>
     
     <div v-else class="diff-container">
-      <div class="diff-header">
-        <div class="diff-column-header">保存的配置</div>
-        <div class="diff-column-header">当前系统配置</div>
-      </div>
-      
       <div class="diff-content">
-        <div class="diff-side">
-          <div
-            v-for="(part, index) in diffResult"
-            :key="`left-${index}`"
-            :class="['diff-line', { 'diff-removed': part.removed }]"
-          >
-            <pre v-if="part.removed || (!part.added && !part.removed)">{{ part.value }}</pre>
-          </div>
-        </div>
-        
-        <div class="diff-side">
-          <div
-            v-for="(part, index) in diffResult"
-            :key="`right-${index}`"
-            :class="['diff-line', { 'diff-added': part.added }]"
-          >
-            <pre v-if="part.added || (!part.added && !part.removed)">{{ part.value }}</pre>
-          </div>
+        <div
+          v-for="(part, index) in diffResult"
+          :key="`diff-${index}`"
+          :class="['diff-line', { 
+            'diff-removed': part.removed, 
+            'diff-added': part.added 
+          }]"
+        >
+          <span class="diff-marker">
+            {{ part.removed ? '-' : part.added ? '+' : ' ' }}
+          </span>
+          <pre class="diff-text">{{ part.value }}</pre>
         </div>
       </div>
     </div>
@@ -88,54 +77,39 @@ function handleClose() {
 .diff-container {
   display: flex;
   flex-direction: column;
-  max-height: 600px;
-}
-
-.diff-header {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1px;
-  background: #e2e8f0;
-  border: 1px solid #e2e8f0;
-  border-bottom: none;
-  border-radius: 8px 8px 0 0;
-}
-
-.diff-column-header {
-  padding: 12px 16px;
-  background: #f8fafc;
-  font-weight: 600;
-  text-align: center;
-  color: #475569;
 }
 
 .diff-content {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1px;
-  background: #e2e8f0;
-  border: 1px solid #e2e8f0;
-  border-radius: 0 0 8px 8px;
-  overflow: auto;
-  max-height: 500px;
-}
-
-.diff-side {
   background: #ffffff;
-  overflow-x: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
 }
 
 .diff-line {
+  display: flex;
   min-height: 20px;
-  padding: 2px 8px;
   font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
   font-size: 13px;
   line-height: 1.5;
-  white-space: pre;
 }
 
-.diff-line pre {
+.diff-line:hover {
+  filter: brightness(0.97);
+}
+
+.diff-marker {
+  flex-shrink: 0;
+  width: 20px;
+  padding: 2px 6px;
+  text-align: center;
+  font-weight: 600;
+  user-select: none;
+}
+
+.diff-text {
+  flex: 1;
   margin: 0;
+  padding: 2px 8px;
   white-space: pre;
   word-wrap: normal;
   overflow-x: auto;
@@ -143,12 +117,33 @@ function handleClose() {
 
 .diff-removed {
   background: #fee2e2;
+}
+
+.diff-removed .diff-marker {
+  color: #991b1b;
+  background: #fecaca;
+}
+
+.diff-removed .diff-text {
   color: #991b1b;
 }
 
 .diff-added {
   background: #dcfce7;
+}
+
+.diff-added .diff-marker {
   color: #166534;
+  background: #bbf7d0;
+}
+
+.diff-added .diff-text {
+  color: #166534;
+}
+
+.diff-line:not(.diff-removed):not(.diff-added) .diff-marker {
+  color: #94a3b8;
+  background: #f8fafc;
 }
 
 .no-diff {
