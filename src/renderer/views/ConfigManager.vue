@@ -4,6 +4,7 @@ import { useMessage, useDialog } from 'naive-ui'
 import { useConfigStore, type ConfigFile } from '../stores/config'
 import ConfigEditor from '../components/ConfigEditor.vue'
 import ConfigPreview from '../components/ConfigPreview.vue'
+import ConfigDiff from '../components/ConfigDiff.vue'
 import PresetManager from '../components/PresetManager.vue'
 
 const store = useConfigStore()
@@ -18,6 +19,10 @@ const showPreview = ref(false)
 const previewConfig = ref<ConfigFile | null>(null)
 const previewContent = ref<any>(null)
 const showPresetManager = ref(false)
+const showDiff = ref(false)
+const diffConfig = ref<ConfigFile | null>(null)
+const savedDiffContent = ref<any>(null)
+const currentDiffContent = ref<any>(null)
 
 const currentTabConfigs = computed(() => {
   return activeTab.value === 'omo' ? store.omoConfigs : store.ocConfigs
@@ -51,6 +56,28 @@ async function openPreviewDialog(config: ConfigFile) {
   } else {
     message.error('加载配置内容失败')
   }
+}
+
+async function openDiffDialog(config: ConfigFile) {
+  const savedResult = await window.electronAPI.getConfigContent(config.id)
+  if (!savedResult.success) {
+    message.error('加载保存的配置失败')
+    return
+  }
+
+  const currentResult = await window.electronAPI.getCurrentConfigs()
+  if (!currentResult.success) {
+    message.error('加载当前系统配置失败')
+    return
+  }
+
+  const type = config.type
+  const currentContent = currentResult.data?.[type]
+
+  diffConfig.value = config
+  savedDiffContent.value = savedResult.data
+  currentDiffContent.value = currentContent
+  showDiff.value = true
 }
 
 async function handleSave(config: ConfigFile & { content: any }) {
@@ -230,6 +257,9 @@ async function handleRefresh() {
                       <n-button size="small" @click="openPreviewDialog(config)">
                         预览
                       </n-button>
+                      <n-button size="small" type="info" @click="openDiffDialog(config)">
+                        对比
+                      </n-button>
                       <n-button size="small" type="primary" @click="handleActivate(config)">
                         激活
                       </n-button>
@@ -300,6 +330,9 @@ async function handleRefresh() {
                       <n-button size="small" @click="openPreviewDialog(config)">
                         预览
                       </n-button>
+                      <n-button size="small" type="info" @click="openDiffDialog(config)">
+                        对比
+                      </n-button>
                       <n-button size="small" type="primary" @click="handleActivate(config)">
                         激活
                       </n-button>
@@ -335,6 +368,13 @@ async function handleRefresh() {
 
     <PresetManager
       v-model:show="showPresetManager"
+    />
+
+    <ConfigDiff
+      v-model:show="showDiff"
+      :config-name="diffConfig?.name || ''"
+      :saved-content="savedDiffContent"
+      :current-content="currentDiffContent"
     />
   </div>
 </template>
