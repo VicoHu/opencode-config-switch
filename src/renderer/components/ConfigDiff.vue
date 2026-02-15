@@ -48,21 +48,23 @@ function handleClose() {
     </div>
     
     <div v-else class="diff-container">
-      <div class="diff-content">
-        <div
-          v-for="(part, index) in diffResult"
-          :key="`diff-${index}`"
-          :class="['diff-line', { 
-            'diff-removed': part.removed, 
-            'diff-added': part.added 
-          }]"
-        >
-          <span class="diff-marker">
-            {{ part.removed ? '-' : part.added ? '+' : ' ' }}
-          </span>
-          <pre class="diff-text">{{ part.value }}</pre>
+      <n-scrollbar style="max-height: 60vh;">
+        <div class="diff-content">
+          <div
+            v-for="(part, index) in diffResult"
+            :key="`diff-${index}`"
+            :class="['diff-line', { 
+              'diff-removed': part.removed, 
+              'diff-added': part.added 
+            }]"
+          >
+            <span class="diff-marker">
+              {{ part.removed ? '-' : part.added ? '+' : ' ' }}
+            </span>
+            <pre class="diff-text">{{ part.value }}</pre>
+          </div>
         </div>
-      </div>
+      </n-scrollbar>
     </div>
     
     <template #footer>
@@ -112,7 +114,6 @@ function handleClose() {
   padding: 2px 8px;
   white-space: pre;
   word-wrap: normal;
-  overflow-x: auto;
 }
 
 .diff-removed {
