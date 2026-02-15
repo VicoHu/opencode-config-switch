@@ -435,19 +435,28 @@ async function handleRefresh() {
 
 .main-tabs {
   flex: 1;
+  min-height: 0;
   overflow: hidden;
 }
 
 .main-tabs :deep(.n-tabs-pane-wrapper) {
   height: calc(100% - 40px);
+  min-height: 0;
+}
+
+.main-tabs :deep(.n-tab-pane) {
+  height: 100%;
+  min-height: 0;
 }
 
 .config-list {
   height: 100%;
+  min-height: 0;
+  box-sizing: border-box;
   overflow-y: auto;
   padding: 16px;
+  padding-bottom: 24px;
   background: white;
-  border-radius: 8px;
 }
 
 .list-header {
