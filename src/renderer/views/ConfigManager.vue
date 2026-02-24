@@ -206,22 +206,22 @@ async function handleRefresh() {
 
     <n-tabs v-model:value="activeTab" type="segment" class="main-tabs">
       <n-tab-pane name="omo" tab="Oh My OpenCode">
-        <div class="config-list">
-          <div class="list-header">
-            <n-button type="primary" @click="openCreateDialog">
-              <template #icon>
-                <n-icon><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></n-icon>
-              </template>
-              新建配置
-            </n-button>
-            <n-button @click="handleImport">
-              <template #icon>
-                <n-icon><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></n-icon>
-              </template>
-              从系统导入
-            </n-button>
-          </div>
+        <div class="list-header">
+          <n-button type="primary" @click="openCreateDialog">
+            <template #icon>
+              <n-icon><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></n-icon>
+            </template>
+            新建配置
+          </n-button>
+          <n-button @click="handleImport">
+            <template #icon>
+              <n-icon><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></n-icon>
+            </template>
+            从系统导入
+          </n-button>
+        </div>
 
+        <div class="config-list">
           <n-spin :show="store.loading">
             <n-empty v-if="currentTabConfigs.length === 0" description="暂无配置" />
             <n-list v-else>
@@ -279,22 +279,22 @@ async function handleRefresh() {
       </n-tab-pane>
 
       <n-tab-pane name="oc" tab="OpenCode">
-        <div class="config-list">
-          <div class="list-header">
-            <n-button type="primary" @click="openCreateDialog">
-              <template #icon>
-                <n-icon><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></n-icon>
-              </template>
-              新建配置
-            </n-button>
-            <n-button @click="handleImport">
-              <template #icon>
-                <n-icon><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></n-icon>
-              </template>
-              从系统导入
-            </n-button>
-          </div>
+        <div class="list-header">
+          <n-button type="primary" @click="openCreateDialog">
+            <template #icon>
+              <n-icon><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></n-icon>
+            </template>
+            新建配置
+          </n-button>
+          <n-button @click="handleImport">
+            <template #icon>
+              <n-icon><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></n-icon>
+            </template>
+            从系统导入
+          </n-button>
+        </div>
 
+        <div class="config-list">
           <n-spin :show="store.loading">
             <n-empty v-if="currentTabConfigs.length === 0" description="暂无配置" />
             <n-list v-else>
@@ -447,10 +447,12 @@ async function handleRefresh() {
 .main-tabs :deep(.n-tab-pane) {
   height: 100%;
   min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .config-list {
-  height: 100%;
+  flex: 1;
   min-height: 0;
   box-sizing: border-box;
   overflow-y: auto;
@@ -462,8 +464,8 @@ async function handleRefresh() {
 .list-header {
   display: flex;
   gap: 12px;
-  margin-bottom: 16px;
-  padding-bottom: 16px;
+  padding: 16px 16px 16px 16px;
+  background: white;
   border-bottom: 1px solid #e2e8f0;
 }
 </style>
