@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { useMessage, useDialog } from 'naive-ui'
+import { ref, computed, h } from 'vue'
+import { useMessage, useDialog, useModal, NButton, NSpace } from 'naive-ui'
 import { useConfigStore, type ConfigFile } from '../stores/config'
 import ConfigEditor from '../components/ConfigEditor.vue'
 import ConfigPreview from '../components/ConfigPreview.vue'
@@ -10,6 +10,7 @@ import PresetManager from '../components/PresetManager.vue'
 const store = useConfigStore()
 const message = useMessage()
 const dialog = useDialog()
+const modal = useModal()
 
 const activeTab = ref<'omo' | 'oc'>('omo')
 const showEditor = ref(false)
@@ -81,13 +82,94 @@ async function openDiffDialog(config: ConfigFile) {
 }
 
 async function handleSave(config: ConfigFile & { content: any }) {
+  // 检查是否是当前激活的配置
+  const isActiveConfig = editingConfig.value?.id === store.activeConfigIds[config.type]
+  
+  if (isActiveConfig) {
+    // 先同步到系统
+    const syncSuccess = await store.activateConfig(config.type, config.id)
+    if (syncSuccess) {
+      // 同步成功，再保存到数据库
+      const saveSuccess = await store.saveConfig(config)
+      if (saveSuccess) {
+        message.success('保存成功，已自动同步到系统')
+        showEditor.value = false
+      } else {
+        message.error(store.error || '保存失败')
+      }
+    } else {
+      // 同步失败，显示对话框
+      showSyncFailureDialog(config)
+    }
+  } else {
+    // 非激活配置，保持原有逻辑
+    const success = await store.saveConfig(config)
+    if (success) {
+      message.success('保存成功')
+      showEditor.value = false
+    } else {
+      message.error(store.error || '保存失败')
+    }
+  }
+}
+
+function showSyncFailureDialog(config: ConfigFile & { content: any }) {
+  const instance = modal.create({
+    title: '同步失败',
+    content: '配置同步到系统时发生错误，请选择处理方式',
+    preset: 'dialog',
+    type: 'error',
+    closable: false,
+    closeOnEsc: false,
+    maskClosable: false,
+    footer: () => h(NSpace, { justify: 'end' }, () => [
+      h(NButton, { onClick: () => saveWithoutSync(instance, config) }, () => '保存但不同步'),
+      h(NButton, { type: 'primary', onClick: () => retrySync(instance, config) }, () => '重试'),
+      h(NButton, { type: 'error', onClick: () => discardChanges(instance) }, () => '放弃本次修改')
+    ])
+  })
+}
+
+async function saveWithoutSync(instance: any, config: ConfigFile & { content: any }) {
+  instance.loading = true
   const success = await store.saveConfig(config)
+  instance.loading = false
+  
   if (success) {
-    message.success('保存成功')
+    message.success('已保存（未同步到系统）')
     showEditor.value = false
+    instance.destroy()
   } else {
     message.error(store.error || '保存失败')
   }
+}
+
+async function retrySync(instance: any, config: ConfigFile & { content: any }) {
+  instance.loading = true
+  const syncSuccess = await store.activateConfig(config.type, config.id)
+  
+  if (syncSuccess) {
+    // 同步成功，继续保存
+    const saveSuccess = await store.saveConfig(config)
+    instance.loading = false
+    
+    if (saveSuccess) {
+      message.success('保存成功，已自动同步到系统')
+      showEditor.value = false
+      instance.destroy()
+    } else {
+      message.error(store.error || '保存失败')
+    }
+  } else {
+    instance.loading = false
+    message.error('重试失败，请选择其他选项')
+    // 对话框保持打开，让用户再次选择
+  }
+}
+
+function discardChanges(instance: any) {
+  showEditor.value = false
+  instance.destroy()
 }
 
 function handleDelete(config: ConfigFile) {
