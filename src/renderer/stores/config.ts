@@ -104,6 +104,10 @@ export const useConfigStore = defineStore('config', () => {
       const result = await window.electronAPI.saveConfig(config)
       if (result.success) {
         await loadConfigs()
+        // 如果编辑的是当前激活的配置，自动同步生效
+        if (activeConfigIds.value[config.type] === config.id) {
+          await activateConfig(config.type, config.id)
+        }
         return true
       } else {
         error.value = result.error || '保存失败'
